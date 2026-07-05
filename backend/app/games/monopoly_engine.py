@@ -16,7 +16,7 @@ class MonopolyGameState(BaseModel):
     properties: Dict[str, Property]
     current_turn: str #whose turn it is
 
-class MonoployRefereeEngine:
+class MonopolyRefereeEngine:
     @staticmethod
     def validate_purchase(state: MonopolyGameState, player_name: str, property_name: str)->dict:
         if state.current_turn != player_name:

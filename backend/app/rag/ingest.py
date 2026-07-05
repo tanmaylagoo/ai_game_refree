@@ -1,31 +1,31 @@
-
-from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
+
 from app.rag.embeddings import get_embeddings
 
-def ingest_game_rules(game_id: str, raw_text: str):
-    text_splitter= RecursiveCharacterTextSplitter(
+
+def ingest_documents(game_id: str, documents):
+    """
+    Takes LangChain Documents, chunks them,
+    tags each chunk with the game name,
+    and stores them inside Chroma.
+    """
+
+    splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
-        chunk_overlap=50
+        chunk_overlap=50,
     )
-    chunks = text_splitter.split_text(raw_text)
-    documents=[]
+
+    chunks = splitter.split_documents(documents)
+
     for chunk in chunks:
-        doc = Document(
-            page_content=chunk,
-            metadata={"game":game_id} #binding metadata tag to retriever filter
+        chunk.metadata["game"] = game_id
 
-        )
-        documents.append(doc)
-
-    embeddings = get_embeddings()
-    persist_dir="./chroma_db"
     Chroma.from_documents(
-        documents=documents,
-        embedding=embeddings,
+        documents=chunks,
+        embedding=get_embeddings(),
         collection_name="game-rulebooks",
-        persist_directory=persist_dir
+        persist_directory="./chroma_db",
     )
 
-    print(f"Successfully processed and saved {len(documents)} text records for: '{game_id}'.")
+    print(f"Ingested {len(chunks)} chunks for {game_id}")
