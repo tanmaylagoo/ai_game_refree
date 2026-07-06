@@ -1,0 +1,244 @@
+.search-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  
+  /* Centered and aligned perfectly with the Feature Cards Grid */
+  max-width: 800px;
+  margin: 32px auto 10px auto;
+  z-index: 10;
+}
+
+.search-bar-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px 24px;
+  background: var(--bg-input);
+  backdrop-filter: var(--backdrop-blur-card);
+  -webkit-backdrop-filter: var(--backdrop-blur-card);
+  
+  /* Large rounded search bar */
+  border-radius: 50px;
+  
+  /* Standard shadows; no fixed border style as neon border overlays it */
+  box-shadow: var(--box-shadow-sidebar);
+  
+  transition: 
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+    background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1;
+}
+
+/* 1. Neon Border traveling light track container */
+.search-bar-border {
+  position: absolute;
+  inset: -2px; /* Overlap container edges exactly */
+  border-radius: 50px;
+  padding: 3px; /* Border thickness - thickened from 1.5px */
+  background: transparent;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+  
+  /* 60fps opacity shift and neon glow filter */
+  opacity: 0.55;
+  filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.45)) drop-shadow(0 0 2px rgba(59, 130, 246, 0.35));
+  transition: 
+    opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  /* High fidelity mask-composite logic to carve out the inner container space */
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+/* Container focus-within lighting details */
+.search-bar-container:focus-within {
+  box-shadow: 
+    0 0 35px rgba(59, 130, 246, 0.12), 
+    0 24px 48px -15px rgba(0, 0, 0, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background-color: rgba(8, 8, 30, 0.7);
+}
+
+.search-bar-container:focus-within .search-bar-border {
+  opacity: 1; /* Shines fully bright on active input focus */
+  filter: drop-shadow(0 0 14px rgba(168, 85, 247, 0.8)) drop-shadow(0 0 6px rgba(59, 130, 246, 0.65));
+}
+
+/* Conic gradient ray that rotates inside the border mask */
+.search-bar-border::before {
+  content: '';
+  position: absolute;
+  top: -120%;
+  left: -120%;
+  width: 340%;
+  height: 340%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 45deg,
+    var(--color-purple) 100deg,
+    var(--color-blue) 160deg,
+    transparent 220deg,
+    transparent 360deg
+  );
+  animation: borderRotate 4s linear infinite;
+  will-change: transform;
+}
+
+@keyframes borderRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.search-bar-input {
+  flex-grow: 1;
+  padding: 8px 20px;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  z-index: 2;
+}
+
+.search-bar-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.55;
+}
+
+.search-bar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-circle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  z-index: 2;
+  transition: 
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+    border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+    background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+    color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.plus-btn {
+  color: var(--text-secondary);
+}
+
+.plus-btn:hover {
+  color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.25);
+  transform: scale(1.06);
+}
+
+/* 2. Microphone button premium styling: circular, purple glowing base + pulse */
+.mic-btn {
+  color: var(--color-purple);
+  background-color: rgba(168, 85, 247, 0.07);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  will-change: transform, box-shadow;
+  animation: micPulse 3s infinite ease-in-out;
+}
+
+.mic-btn:hover {
+  color: #ffffff;
+  background-color: rgba(168, 85, 247, 0.22);
+  border-color: rgba(168, 85, 247, 0.45);
+  box-shadow: 
+    0 0 20px rgba(168, 85, 247, 0.5), 
+    0 0 8px rgba(168, 85, 247, 0.25);
+  transform: scale(1.1);
+  animation-play-state: paused; /* Pause standard pulse on hover */
+}
+
+/* Outer Breathing Pulse animation */
+@keyframes micPulse {
+  0% {
+    box-shadow: 
+      0 0 0 0 rgba(168, 85, 247, 0.3),
+      0 0 8px rgba(168, 85, 247, 0.15);
+  }
+  70% {
+    box-shadow: 
+      0 0 0 8px rgba(168, 85, 247, 0),
+      0 0 14px rgba(168, 85, 247, 0.3);
+  }
+  100% {
+    box-shadow: 
+      0 0 0 0 rgba(168, 85, 247, 0),
+      0 0 8px rgba(168, 85, 247, 0.15);
+  }
+}
+
+.search-bar-subtext {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.kbd-shortcut {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 5px;
+  padding: 2px 6px;
+  color: var(--text-secondary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 768px) {
+  .search-bar-wrapper {
+    margin-top: 20px;
+  }
+  .search-bar-container {
+    padding: 10px 16px;
+  }
+  .search-bar-input {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+}
+
+/* Height-based scaling to avoid vertical overflows on shorter viewport heights */
+@media (max-height: 800px) {
+  .search-bar-wrapper {
+    margin: 16px auto 8px auto; /* Tighter margin space */
+  }
+}
+
+@media (max-height: 700px) {
+  .search-bar-wrapper {
+    margin: 8px auto 4px auto;
+  }
+  .search-bar-container {
+    padding: 10px 20px;
+  }
+}
