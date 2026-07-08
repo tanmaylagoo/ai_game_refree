@@ -1,0 +1,56 @@
+.home-page-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Vertically center the inner content container */
+  align-items: center; /* Horizontally center */
+  height: 100vh;
+  padding: 40px 80px;
+  overflow: hidden; /* Scrollbars disabled for clean centerpiece view */
+  position: relative;
+  z-index: 1;
+}
+
+.home-page-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 960px;
+  height: auto; /* Sized strictly by content to avoid vertical stretching */
+  margin: 0 auto;
+}
+
+.search-section {
+  width: 100%;
+  margin-top: 16px; /* Spacing below the floating mascot orb wrapper */
+  flex: 0 0 auto; /* Prevent vertical stretching */
+}
+
+/* Breakpoint visual collapsing */
+@media (max-width: 1100px) {
+  .home-page-container {
+    padding: 30px 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-page-container {
+    padding: 24px 20px;
+  }
+  .search-section {
+    margin-top: 8px;
+  }
+}
+
+/* Height-based scaling to avoid vertical clipping on laptop/smaller viewports */
+@media (max-height: 800px) {
+  .home-page-container {
+    padding: 24px 80px; /* Reduce vertical padding */
+  }
+}
+
+@media (max-height: 700px) {
+  .home-page-container {
+    padding: 12px 80px;
+  }
+}

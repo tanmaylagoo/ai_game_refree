@@ -1,0 +1,315 @@
+.ai-orb-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 260px;
+  height: 260px;
+  margin: 32px auto;
+  pointer-events: none;
+}
+
+/* 1. Synced Projector Shadow Underneath the Mascot - Boosted brightness */
+.ai-orb-shadow {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 8px;
+  border-radius: var(--radius-circle);
+  background: radial-gradient(
+    ellipse at center, 
+    rgba(168, 85, 247, 0.7) 0%, 
+    rgba(59, 130, 246, 0.4) 50%, 
+    transparent 80%
+  );
+  filter: blur(3px);
+  will-change: transform, opacity, filter;
+  animation: shadowPulse 6s infinite ease-in-out;
+  z-index: 1;
+}
+
+/* 2. Orb Bloom Effect backing - Boosted brightness */
+.ai-orb-glow {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: var(--radius-circle);
+  background: radial-gradient(
+    circle, 
+    rgba(168, 85, 247, 0.28) 0%, 
+    rgba(59, 130, 246, 0.16) 50%, 
+    rgba(236, 72, 153, 0.08) 80%, 
+    transparent 100%
+  );
+  filter: blur(40px);
+  z-index: 1;
+  opacity: 0.95;
+  will-change: transform, opacity, filter;
+  animation: orbBreathGlow 7s infinite ease-in-out;
+}
+
+/* 3. Concentric Orbit Rings */
+.ai-orb-outer-ring {
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  border-radius: var(--radius-circle);
+  border: 1px dashed rgba(255, 255, 255, 0.03);
+  z-index: 2;
+  will-change: transform;
+  animation: orbitRotate 45s infinite linear;
+}
+
+/* 4. Atmospheric Drifting Particles */
+.ai-orb-particle {
+  position: absolute;
+  border-radius: var(--radius-circle);
+  z-index: 2;
+  will-change: transform;
+}
+
+.ai-orb-particle:nth-child(even) {
+  animation: particleDriftEven 12s infinite ease-in-out;
+}
+
+.ai-orb-particle:nth-child(odd) {
+  animation: particleDriftOdd 10s infinite ease-in-out;
+}
+
+/* 5. Circular Mascot Glass Sphere - Boosted crescent glows and bloom coordinates */
+.ai-orb-sphere {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: var(--radius-circle);
+  
+  /* Lighter deep navy base to integrate glows cleanly */
+  background: linear-gradient(
+    135deg, 
+    #0e113b 0%, 
+    #140b2d 50%,
+    #1b0838 100%
+  );
+  
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1.5px solid rgba(255, 255, 255, 0.12); /* Slightly sharper white edge */
+  
+  /* High-Contrast Inset Crescents & Intense Bloom Shadows matching reference visual */
+  box-shadow: 
+    0 20px 40px -10px rgba(0, 0, 0, 0.8),
+    0 0 50px rgba(168, 85, 247, 0.35), /* Intense purple aura */
+    0 0 25px rgba(59, 130, 246, 0.25),  /* Intense blue aura */
+    inset 12px 0 24px -2px rgba(59, 130, 246, 0.9),  /* Cyan crescent left */
+    inset -12px 0 24px -2px rgba(236, 72, 153, 0.9), /* Pink crescent right */
+    inset 0 0 20px rgba(255, 255, 255, 0.3);        /* Inset white glare */
+    
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  will-change: transform;
+  animation: mascotFloat 6s infinite ease-in-out;
+}
+
+/* 6. Glowing Smiling Eyes Container & SVG - Boosted dropshadow glare */
+.ai-orb-eyes-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 24px;
+  z-index: 2;
+  transform-origin: center;
+  transition: transform 0.12s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.ai-orb-eyes-svg {
+  width: 100%;
+  height: 100%;
+  /* Intense white-purple neon drop shadow */
+  filter: 
+    drop-shadow(0 0 8px #ffffff) 
+    drop-shadow(0 0 3px rgba(168, 85, 247, 0.85));
+}
+
+/* Blinking close action */
+.ai-orb-eyes-container.is-blinking {
+  transform: scaleY(0.04);
+}
+
+/* 7. Glossy Surface Highlights (Lens Reflection) */
+.ai-orb-reflection {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  width: 60px;
+  height: 30px;
+  border-radius: 40px / 20px;
+  background: linear-gradient(
+    to bottom, 
+    rgba(255, 255, 255, 0.35) 0%, 
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(-28deg);
+  z-index: 3;
+}
+
+/* --- Sync Animations Keyframes --- */
+
+/* Vertical floating mascot */
+@keyframes mascotFloat {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0); }
+}
+
+/* Shadow project response synced with height position */
+@keyframes shadowPulse {
+  0% { 
+    transform: translateX(-50%) scale(1); 
+    opacity: 0.8; 
+    filter: blur(3px);
+  }
+  50% { 
+    transform: translateX(-50%) scale(0.76); 
+    opacity: 0.4;                            
+    filter: blur(5px);
+  }
+  100% { 
+    transform: translateX(-50%) scale(1); 
+    opacity: 0.8; 
+    filter: blur(3px);
+  }
+}
+
+/* Pulse backing glow bloom */
+@keyframes orbBreathGlow {
+  0% { 
+    transform: scale(1); 
+    opacity: 0.9;
+    filter: blur(40px); 
+  }
+  50% { 
+    transform: scale(1.08); 
+    opacity: 1;
+    filter: blur(48px); 
+  }
+  100% { 
+    transform: scale(1); 
+    opacity: 0.9;
+    filter: blur(40px); 
+  }
+}
+
+/* Orbit rotation */
+@keyframes orbitRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Particle drift paths */
+@keyframes particleDriftOdd {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(8px, -10px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes particleDriftEven {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(-8px, 10px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* --- Responsive mobile scaling breakpoints --- */
+@media (max-width: 768px) {
+  .ai-orb-wrapper {
+    width: 190px;
+    height: 190px;
+    margin: 16px auto;
+  }
+  
+  .ai-orb-glow {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .ai-orb-outer-ring {
+    width: 175px;
+    height: 175px;
+  }
+  
+  .ai-orb-sphere {
+    width: 100px;
+    height: 100px;
+    box-shadow: 
+      0 15px 30px -8px rgba(0, 0, 0, 0.75),
+      0 0 35px rgba(168, 85, 247, 0.28),
+      0 0 20px rgba(59, 130, 246, 0.18),
+      inset 9px 0 16px -2px rgba(59, 130, 246, 0.9),
+      inset -9px 0 16px -2px rgba(236, 72, 153, 0.9),
+      inset 0 0 12px rgba(255, 255, 255, 0.25);
+  }
+  
+  .ai-orb-eyes-container {
+    width: 60px;
+    height: 18px;
+  }
+  
+  .ai-orb-reflection {
+    width: 44px;
+    height: 22px;
+    top: 7px;
+    left: 14px;
+  }
+
+  .ai-orb-shadow {
+    width: 66px;
+    height: 6px;
+    bottom: 12px;
+  }
+}
+
+/* Height-based scaling to avoid vertical clipping on laptop/smaller viewports */
+@media (max-height: 800px) {
+  .ai-orb-wrapper {
+    width: 200px;
+    height: 200px;
+    margin: 12px auto;
+  }
+  
+  .ai-orb-glow {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .ai-orb-outer-ring {
+    width: 185px;
+    height: 185px;
+  }
+  
+  .ai-orb-sphere {
+    width: 110px;
+    height: 110px;
+  }
+  
+  .ai-orb-eyes-container {
+    width: 66px;
+    height: 20px;
+  }
+  
+  .ai-orb-reflection {
+    width: 48px;
+    height: 24px;
+    top: 8px;
+    left: 16px;
+  }
+
+  .ai-orb-shadow {
+    width: 72px;
+    height: 6px;
+    bottom: 16px;
+  }
+}

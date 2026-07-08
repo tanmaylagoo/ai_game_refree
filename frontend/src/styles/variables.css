@@ -1,0 +1,58 @@
+:root {
+  /* Premium Cosmic Dark Theme Colors */
+  --bg-dark: #050516; /* Luxurious Deep Navy */
+  --bg-sidebar: rgba(8, 8, 28, 0.45);
+  --bg-card: rgba(255, 255, 255, 0.012);
+  --bg-card-hover: rgba(255, 255, 255, 0.035);
+  --bg-input: rgba(6, 6, 22, 0.6);
+  
+  /* Cosmic Neon Accents */
+  --color-purple: #a855f7; /* Soft Purple */
+  --color-blue: #3b82f6; /* Cosmic Blue */
+  --color-pink: #ec4899; /* Neon Pink Glow */
+  
+  /* Text Coloring Hierarchy */
+  --text-primary: #f8fafc; /* Sleek White */
+  --text-secondary: #94a3b8; /* Cool Slate */
+  --text-muted: #475569; /* Muted Slate */
+  --text-accent: #3b82f6;
+  
+  /* Ultra-thin Glassmorphic Borders */
+  --border-color: rgba(255, 255, 255, 0.05);
+  --border-color-hover: rgba(255, 255, 255, 0.15);
+  --border-glow-purple: rgba(168, 85, 247, 0.35);
+  --border-glow-blue: rgba(59, 130, 246, 0.35);
+  
+  /* Luxury Shadowing & Depth Elevation */
+  --backdrop-blur-sidebar: blur(32px);
+  --backdrop-blur-card: blur(24px);
+  
+  /* Complex stacked shadow: dark depth + inner glass edge light */
+  --box-shadow-sidebar: 
+    0 30px 60px -15px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    
+  --box-shadow-card: 
+    0 20px 40px -12px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    
+  --box-shadow-card-hover: 
+    0 30px 60px -15px rgba(0, 0, 0, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  
+  /* Typography Structure */
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-accent: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Space Grotesk', monospace;
+  
+  /* Smooth Border Radii (Luxury curves) */
+  --radius-xl: 24px;   /* Sidebar panels */
+  --radius-lg: 20px;   /* Feature floating cards */
+  --radius-md: 16px;   /* Search bar / Nav buttons */
+  --radius-sm: 12px;   /* Minor widgets / Tags */
+  --radius-circle: 50%;
+  
+  /* Standard Transition Rules */
+  --transition-fast: 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
