@@ -44,8 +44,38 @@ class MonopolyRefereeEngine:
             }
         return {
             "legal": True,
-            "reason":f"Purchase is legal. {player_name} may buy {property_name} for $ {prop.price}"
-        }
+            "reason": f"Purchase is legal. {player_name} may buy {property_name} for $ {prop.price}",
+            "player": player_name,
+            "property": property_name
+            }
+    
+    @staticmethod
+    def execute_purchase(
+    state: MonopolyGameState,
+    player_name: str,
+    property_name: str
+    ) -> MonopolyGameState:
+        
+
+        player = state.players[player_name]
+        prop = state.properties[property_name]
+
+    # Deduct money
+        player.balance -= prop.price
+
+    # Transfer ownership
+        prop.owner = player_name
+
+    # Advance turn (simple implementation)
+        player_names = list(state.players.keys())
+
+        current_index = player_names.index(state.current_turn)
+
+        next_index = (current_index + 1) % len(player_names)
+
+        state.current_turn = player_names[next_index]
+
+        return state
 
             
         

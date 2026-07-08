@@ -1,7 +1,10 @@
 from app.rag.retriever import get_rulebook_retriever
 from app.games.chess_engine import ChessRefereeEngine
 from app.games.uno_engine import UnoRefereeEngine
-from app.games.monopoly_engine import MonopolyRefereeEngine
+from app.games.monopoly_engine import (
+    MonopolyRefereeEngine,
+    MonopolyGameState,
+)
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from app.graph.state import RefereeState
@@ -27,11 +30,34 @@ def validate_move_node(state: RefereeState)-> dict:
     elif game_id=="uno" and "current_card" in game_ctx:
         validation=UnoRefereeEngine.validate_move(game_ctx, query)
     elif game_id == "monopoly" and "properties" in game_ctx:
+
+        monopoly_state = MonopolyGameState(**game_ctx)
+
         if query.lower().startswith("buy "):
-            prop_name=query[4:]
-            player_name= game_ctx.get("current_turn")
-            validation = MonopolyRefereeEngine.validate_purchase(game_ctx, player_name, prop_name)
-    return {"engine_validation": validation}
+
+            prop_name = query[4:].strip()
+
+            player_name = monopoly_state.current_turn
+
+            validation = MonopolyRefereeEngine.validate_purchase(
+                monopoly_state,
+                player_name,
+                prop_name
+            )
+
+            if validation["legal"]:
+
+                updated_state = MonopolyRefereeEngine.execute_purchase(
+                    monopoly_state,
+                    player_name,
+                    prop_name
+                )
+
+                game_ctx = updated_state.model_dump()
+    return {
+    "engine_validation": validation,
+    "game_state": game_ctx
+}
     
 
 
