@@ -115,7 +115,7 @@ def monopoly_move(
 
     result = referee_agent.invoke(graph_state)
 
-# Save the updated Monopoly state returned by LangGraph
+
     update_session(
     db,
     payload.session_id,

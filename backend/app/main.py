@@ -1,54 +1,56 @@
+#updated main.py
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
-from typing import Dict, Any
 
-from app.graph.graph import referee_agent
+from app.routers import chat
+from app.routers import monopoly
 
 app = FastAPI(
-    title="AI Game Referee",
+    title="AI Tabletop Referee API",
+    description="""
+An AI-powered tabletop referee capable of validating moves and explaining
+official rules for multiple board games using:
+
+- LangGraph
+- RAG (ChromaDB)
+- Gemini
+- Deterministic Game Engines
+- SQLite Session Management (Monopoly)
+""",
     version="1.0.0"
 )
 
-# Allow frontend requests
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],      # change to frontend URL later
+    allow_origins=["*"],  # Change this to your frontend URL in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-class RefereeRequest(BaseModel):
-    game_id: str
-    user_query: str
-    game_state: Dict[str, Any] = Field(default_factory=dict)
+app.include_router(chat.router, prefix="/api")
+app.include_router(monopoly.router, prefix="/api")
 
 
-@app.get("/")
-def home():
+@app.get("/", tags=["System"])
+async def root():
     return {
-        "message": "AI Game Referee API Running"
+        "message": "AI Tabletop Referee API is running.",
+        "docs": "/docs",
+        "health": "/health"
     }
 
 
-@app.post("/referee")
-def referee(request: RefereeRequest):
-
-    state = {
-        "game_id": request.game_id,
-        "user_query": request.user_query,
-        "game_state": request.game_state,
-        "retrieved_rules": [],
-        "engine_validation": {},
-        "final_decision": "",
-    }
-
-    result = referee_agent.invoke(state)
-
+@app.get("/health", tags=["System"])
+async def health():
     return {
-        "decision": result["final_decision"],
-        "validation": result["engine_validation"],
-        "rules": result["retrieved_rules"],
+        "status": "healthy",
+        "service": "AI Tabletop Referee API"
     }
