@@ -9,7 +9,11 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from app.graph.state import RefereeState
 from dotenv import load_dotenv
-load_dotenv()
+import os
+
+# Explicitly load from the backend root folder to prevent path issues
+env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '.env')
+load_dotenv(dotenv_path=env_path)
 
 def retrieve_rules_node(state: RefereeState)->dict: #rulebook fetching node
     retriever=get_rulebook_retriever(state["game_id"])
@@ -28,7 +32,9 @@ def validate_move_node(state: RefereeState)-> dict:
             game_ctx["fen"], query
         )
     elif game_id=="uno" and "current_card" in game_ctx:
-        validation=UnoRefereeEngine.validate_move(game_ctx, query)
+        from app.games.uno_engine import UnoGameState
+        uno_state = UnoGameState(**game_ctx)
+        validation=UnoRefereeEngine.validate_move(uno_state, query)
     elif game_id == "monopoly" and "properties" in game_ctx:
 
         monopoly_state = MonopolyGameState(**game_ctx)
