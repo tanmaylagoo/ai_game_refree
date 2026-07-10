@@ -1,6 +1,7 @@
 fastapi==0.115.9
 uvicorn==0.34.0
 pydantic>=2.10
+email-validator
 
 langchain
 langgraph
@@ -19,3 +20,6 @@ python-multipart
 python-dotenv
 
 chess==1.10.0
+motor>=3.3.0
+pyjwt>=2.8.0
+bcrypt>=4.1.0

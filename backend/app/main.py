@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import chat
 from app.routers import monopoly
+from app.routers import auth
 
 app = FastAPI(
     title="AI Tabletop Referee API",
@@ -37,6 +38,7 @@ app.add_middleware(
 
 app.include_router(chat.router, prefix="/api")
 app.include_router(monopoly.router, prefix="/api")
+app.include_router(auth.router, prefix="/api")
 
 
 @app.get("/", tags=["System"])
