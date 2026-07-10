@@ -43,7 +43,7 @@ const ChatWindow = ({ gameId }) => {
   };
 
   return (
-    <div className="glass-panel rounded-2xl h-full flex flex-col overflow-hidden">
+    <div className="glass-panel rounded-2xl w-full h-full flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.04]">
         <div className="flex items-center gap-2.5">

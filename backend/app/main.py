@@ -8,7 +8,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import chat
-from app.routers import monopoly
 from app.routers import auth
 
 app = FastAPI(
@@ -21,7 +20,7 @@ official rules for multiple board games using:
 - RAG (ChromaDB)
 - Gemini
 - Deterministic Game Engines
-- SQLite Session Management (Monopoly)
+
 """,
     version="1.0.0"
 )
@@ -37,7 +36,7 @@ app.add_middleware(
 
 
 app.include_router(chat.router, prefix="/api")
-app.include_router(monopoly.router, prefix="/api")
+
 app.include_router(auth.router, prefix="/api")
 
 

@@ -37,38 +37,16 @@ const UnoGamePanel = () => {
 
     addMessage('uno', { role: 'user', content: `Played: **${card}**` });
 
-    try {
-      const response = await queryUNO(card, {
-        current_card: currentCard,
-        current_color: currentColor,
-        player_hand: playerHand,
-      });
-
-      if (response.engine_validation?.legal === false) {
-        toast.error(response.engine_validation?.reason || 'Illegal play');
-        addMessage('uno', {
-          role: 'ai',
-          content: `❌ **Illegal Play**\n\n${response.decision || response.engine_validation?.reason || 'Card cannot be played.'}`,
-        });
-      } else {
-        const parsed = parseCard(card);
-        setCurrentCard(card);
-        setCurrentColor(parsed.color === 'Wild' || parsed.color === 'Wild-Draw4' ? currentColor : parsed.color);
-        setPlayerHand((prev) => prev.filter((_, i) => i !== selectedIndex));
-        setSelectedIndex(null);
-        toast.success('Card played!');
-        addMessage('uno', { role: 'ai', content: response.decision || 'Move accepted.' });
-      }
-    } catch (err) {
-      toast.error(err.message || 'Failed to validate');
-      addMessage('uno', {
-        role: 'ai',
-        content: `⚠️ **Error**: ${err.message || 'Could not reach the AI Referee.'}`,
-      });
-    } finally {
-      setIsThinking(false);
-      setIsLoading(false);
-    }
+    // Directly accept the played card without validation
+    const parsed = parseCard(card);
+    setCurrentCard(card);
+    setCurrentColor(parsed.color === 'Wild' || parsed.color === 'Wild-Draw4' ? currentColor : parsed.color);
+    setPlayerHand((prev) => prev.filter((_, i) => i !== selectedIndex));
+    setSelectedIndex(null);
+    toast.success('Card played!');
+    addMessage('uno', { role: 'ai', content: 'Move accepted.' });
+    setIsThinking(false);
+    setIsLoading(false);
   };
 
   const addCard = () => {

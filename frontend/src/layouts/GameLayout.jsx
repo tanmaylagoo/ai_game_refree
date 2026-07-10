@@ -9,7 +9,7 @@ const GameLayout = ({ children, gameId }) => {
         {children}
       </div>
       {/* Chat Panel */}
-      <div className="lg:flex-[2] min-w-[340px] max-w-full lg:max-w-[440px] h-full">
+      <div className="lg:flex-[3] min-w-[340px] max-w-full lg:max-w-[560px] h-full flex flex-col items-center justify-center">
         <ChatWindow gameId={gameId} />
       </div>
     </div>
