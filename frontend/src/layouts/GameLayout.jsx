@@ -8,8 +8,8 @@ const GameLayout = ({ children, gameId }) => {
       <div className="flex-1 lg:flex-[3] overflow-y-auto rounded-2xl pr-1 custom-scroll">
         {children}
       </div>
-      {/* Chat Panel */}
-      <div className="lg:flex-[3] min-w-[340px] max-w-full lg:max-w-[560px] h-full flex flex-col items-center justify-center">
+      {/* Chat Panel - centered and responsive */}
+      <div className="flex-1 max-w-[1100px] w-10/12 md:w-8/12 mx-auto flex flex-col items-center justify-center">
         <ChatWindow gameId={gameId} />
       </div>
     </div>

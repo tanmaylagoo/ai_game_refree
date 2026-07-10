@@ -35,7 +35,7 @@ async def process_referee_inquiry(payload: QueryRequest):
     Executes the AI referee workflow:
     1. Retrieve relevant rules
     2. Validate using deterministic engine
-    3. Generate explanation using Gemini
+    3. Generate explanation using GROQ
     """
 
     try:

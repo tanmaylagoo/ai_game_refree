@@ -2,6 +2,7 @@ from app.rag.retriever import get_rulebook_retriever
 from app.games.chess_engine import ChessRefereeEngine
 
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 
 from app.graph.state import RefereeState
@@ -68,14 +69,14 @@ def validate_move_node(state: RefereeState) -> dict:
 
 
 # -----------------------------
-# Gemini Explanation
+# GROQ Explanation
 # -----------------------------
 def generate_explanation_node(state: RefereeState) -> dict:
 
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-lite",
-        temperature=0.3
-    )
+    llm = ChatGroq(
+    model="llama-3.3-70b-versatile",
+    temperature=0.3
+)
 
     prompt = ChatPromptTemplate.from_template(
 """

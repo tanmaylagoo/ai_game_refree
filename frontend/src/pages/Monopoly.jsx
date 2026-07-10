@@ -1,15 +1,13 @@
 import React from 'react';
-import { Building2 } from 'lucide-react';
-import GameLayout from '../layouts/GameLayout';
-import PageHeader from '../components/ui/PageHeader';
-
+import ChatWindow from '../components/chat/ChatWindow';
 
 const Monopoly = () => {
   return (
-    <GameLayout gameId="monopoly">
-      <PageHeader title="Monopoly Referee" subtitle="Chat with the AI Referee for Monopoly assistance." icon={Building2} />
-
-    </GameLayout>
+    <div className="flex justify-center items-stretch h-[calc(100vh-4rem)] p-4 md:p-6">
+      <div className="w-full sm:w-[90%] md:w-[80%] lg:w-[75%] max-w-[1200px] min-w-0">
+        <ChatWindow gameId="monopoly" />
+      </div>
+    </div>
   );
 };
 

@@ -18,7 +18,7 @@ official rules for multiple board games using:
 
 - LangGraph
 - RAG (ChromaDB)
-- Gemini
+- GROQ
 - Deterministic Game Engines
 
 """,
