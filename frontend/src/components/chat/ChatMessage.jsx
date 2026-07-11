@@ -27,7 +27,7 @@ const ChatMessage = ({ message }) => {
           <Bot size={16} className="text-white" />
         </div>
       )}
-      <div className={`group relative max-w-[80%] ${
+      <div className={`group relative max-w-[80%] min-w-0 break-all ${
         isAI
           ? 'glass-card p-4 border-l-2 border-l-neon-purple/40'
           : 'bg-gradient-to-r from-neon-purple/80 to-neon-blue/80 text-white p-4 rounded-2xl rounded-br-md'
