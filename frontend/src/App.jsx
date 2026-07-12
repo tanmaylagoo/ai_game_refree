@@ -12,14 +12,10 @@ import Home from './pages/Home';
 import Chess from './pages/Chess';
 import Uno from './pages/Uno';
 import Monopoly from './pages/Monopoly';
-<<<<<<< Updated upstream
 import About from './pages/About';
 import Login from './pages/Login';
 import Register from './pages/Register';
-=======
->>>>>>> Stashed changes
 import NotFound from './pages/NotFound';
-import About from './pages/About';
 import { useLocation } from 'react-router-dom';
 import StarfieldBackground from './components/ui/StarfieldBackground';
 
@@ -82,7 +78,6 @@ const AuthenticatedLayout = () => {
 function App() {
   return (
     <ThemeProvider>
-<<<<<<< Updated upstream
       <AuthProvider>
         <ChatProvider>
           <MonopolySessionProvider>
@@ -118,37 +113,6 @@ function App() {
           </MonopolySessionProvider>
         </ChatProvider>
       </AuthProvider>
-=======
-      <ChatProvider>
-        <MonopolySessionProvider>
-          <Router>
-            <Layout />
-
-            {/* Toast Notifications */}
-            <Toaster
-              position="bottom-right"
-              toastOptions={{
-                duration: 3000,
-                style: {
-                  background: '#0a0a2e',
-                  color: '#f8fafc',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  borderRadius: '12px',
-                  fontSize: '13px',
-                  boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.7)',
-                },
-                success: {
-                  iconTheme: { primary: '#a855f7', secondary: '#f8fafc' },
-                },
-                error: {
-                  iconTheme: { primary: '#ef4444', secondary: '#f8fafc' },
-                },
-              }}
-            />
-          </Router>
-        </MonopolySessionProvider>
-      </ChatProvider>
->>>>>>> Stashed changes
     </ThemeProvider>
   );
 }

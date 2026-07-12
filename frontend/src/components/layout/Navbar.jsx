@@ -1,13 +1,9 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-<<<<<<< Updated upstream
 import { Sun, Moon, ExternalLink, Gamepad2 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
-=======
-import { ExternalLink, Gamepad2 } from 'lucide-react';
->>>>>>> Stashed changes
 
 const gameNames = {
   '/': 'Home',
@@ -18,11 +14,8 @@ const gameNames = {
 };
 
 const Navbar = () => {
-<<<<<<< Updated upstream
   const { isDark, toggleTheme } = useTheme();
   const { user } = useAuth();
-=======
->>>>>>> Stashed changes
   const location = useLocation();
   const currentGame = gameNames[location.pathname] || 'AI Referee';
 
