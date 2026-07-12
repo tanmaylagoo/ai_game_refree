@@ -211,7 +211,7 @@ export function ChessBoard({ game, onMove, onFenChange }: Props & { game: UseChe
             pieces={orientation === "white" ? game.capturedPieces.white : game.capturedPieces.black}
             color={orientation === "white" ? "b" : "w"}
             opponentPieces={orientation === "white" ? game.capturedPieces.black : game.capturedPieces.white}
-            label={orientation === "white" ? "Black lost" : "White lost"}
+            label={orientation === "white" ? "Black" : "White"}
           />
 
           <div className="my-3 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10">
@@ -237,7 +237,7 @@ export function ChessBoard({ game, onMove, onFenChange }: Props & { game: UseChe
             pieces={orientation === "white" ? game.capturedPieces.black : game.capturedPieces.white}
             color={orientation === "white" ? "w" : "b"}
             opponentPieces={orientation === "white" ? game.capturedPieces.white : game.capturedPieces.black}
-            label={orientation === "white" ? "White lost" : "Black lost"}
+            label={orientation === "white" ? "White" : "Black"}
           />
 
           <div className="mt-4">
