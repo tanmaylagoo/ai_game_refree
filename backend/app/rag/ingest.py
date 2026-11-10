@@ -1,3 +1,4 @@
+import os
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 
@@ -21,11 +22,15 @@ def ingest_documents(game_id: str, documents):
     for chunk in chunks:
         chunk.metadata["game"] = game_id
 
+    backend_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    default_persist_dir = os.path.join(backend_root, "chroma_db")
+    persist_dir = os.getenv("CHROMA_PERSIST_DIR", default_persist_dir)
+
     Chroma.from_documents(
         documents=chunks,
         embedding=get_embeddings(),
         collection_name="game-rulebooks",
-        persist_directory="./chroma_db",
+        persist_directory=persist_dir,
     )
 
     print(f"Ingested {len(chunks)} chunks for {game_id}")
