@@ -7,19 +7,21 @@ langchain
 langgraph
 langchain-community
 langchain-google-genai
+langchain-groq>=0.1.0
 langchain-huggingface
 langchain-chroma
 
 chromadb
-
 sentence-transformers
 huggingface-hub
 tiktoken
 
 python-multipart
 python-dotenv
+sqlalchemy>=2.0.0
 
 chess==1.10.0
+pymongo>=4.6.0
 motor>=3.3.0
 pyjwt>=2.8.0
 bcrypt>=4.1.0
