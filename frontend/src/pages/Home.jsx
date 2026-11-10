@@ -89,6 +89,9 @@ const Home = () => {
         transition={{ duration: 0.6, delay: 0.2 }}
         className="text-center mb-8 relative z-10"
       >
+        <h1 className="text-3xl md:text-4xl font-extrabold text-gradient tracking-tight font-[family-name:var(--font-accent)] mb-2">
+          FairPlay AI
+        </h1>
         <p className="text-cosmic-200 text-lg max-w-md mx-auto leading-relaxed">
           Your intelligent tabletop game companion for move validation, rule checking, and strategy insights.
         </p>

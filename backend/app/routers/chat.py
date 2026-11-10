@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 from typing import Dict, Any
 
 from app.graph.graph import referee_agent
+from app.routers.auth import get_current_user
 
 router = APIRouter(
     prefix="/chat",
@@ -30,7 +31,10 @@ class QueryRequest(BaseModel):
 
 
 @router.post("/query")
-async def process_referee_inquiry(payload: QueryRequest):
+async def process_referee_inquiry(
+    payload: QueryRequest,
+    current_user: dict = Depends(get_current_user)
+):
     """
     Executes the AI referee workflow:
     1. Retrieve relevant rules

@@ -17,7 +17,7 @@ const Navbar = () => {
   const { isDark, toggleTheme } = useTheme();
   const { user } = useAuth();
   const location = useLocation();
-  const currentGame = gameNames[location.pathname] || 'AI Referee';
+  const currentGame = gameNames[location.pathname] || 'FairPlay AI';
 
   return (
     <motion.header

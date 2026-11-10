@@ -37,7 +37,7 @@ const Register = () => {
     setIsSubmitting(false);
 
     if (success) {
-      navigate('/login');
+      navigate('/');
     }
   };
 
@@ -59,10 +59,10 @@ const Register = () => {
             <Gamepad2 size={30} className="text-white" />
           </div>
           <h1 className="text-3xl font-extrabold text-gradient tracking-tight font-[family-name:var(--font-accent)]">
-            AI Referee
+            FairPlay AI
           </h1>
           <p className="text-sm text-cosmic-200 mt-2 text-center">
-            Register to claim your cosmic game key
+            Create your account to get started
           </p>
         </div>
 
@@ -85,7 +85,7 @@ const Register = () => {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="SpaceExplorer"
+                  placeholder="johndoe"
                   className="w-full bg-cosmic-900/60 border border-white/[0.08] hover:border-white/[0.15] focus:border-neon-purple rounded-xl py-3 pl-11 pr-4 text-sm text-cosmic-50 placeholder-cosmic-300 outline-none transition-all duration-300 focus:ring-1 focus:ring-neon-purple/35"
                 />
               </div>
@@ -175,7 +175,7 @@ const Register = () => {
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
-                  <span>Create Cosmic Key</span>
+                  <span>Create Account</span>
                   <ArrowRight size={16} />
                 </>
               )}
@@ -184,12 +184,12 @@ const Register = () => {
 
           {/* Card Footer Link */}
           <div className="mt-6 text-center text-xs text-cosmic-200 border-t border-white/[0.03] pt-5">
-            <span>Already registered? </span>
+            <span>Already have an account? </span>
             <Link
               to="/login"
               className="text-neon-cyan hover:text-neon-cyan/80 font-medium transition-colors duration-200"
             >
-              Enter the chamber
+              Sign in
             </Link>
           </div>
         </div>

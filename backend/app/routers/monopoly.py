@@ -12,6 +12,7 @@ from app.database.crud import (
 )
 
 from app.graph.graph import referee_agent
+from app.routers.auth import get_current_user
 
 router = APIRouter(
     prefix="/monopoly",
@@ -28,7 +29,8 @@ class MoveRequest(BaseModel):
 @router.post("/create")
 def create_monopoly_session(
     payload: CreateSessionRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
 ):
 
     session_id = create_session(
@@ -44,7 +46,8 @@ def create_monopoly_session(
 @router.get("/{session_id}")
 def get_monopoly_session(
     session_id: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
 ):
 
     state = load_session(
@@ -63,7 +66,8 @@ def get_monopoly_session(
 @router.delete("/{session_id}")
 def remove_session(
     session_id: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
 ):
 
     success = delete_session(
@@ -84,7 +88,8 @@ def remove_session(
 @router.post("/move")
 def monopoly_move(
     payload: MoveRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
 ):
 
     state = load_session(

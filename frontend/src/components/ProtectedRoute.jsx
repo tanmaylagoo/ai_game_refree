@@ -15,8 +15,8 @@ const ProtectedRoute = ({ children }) => {
           <div className="absolute w-12 h-12 rounded-full border border-neon-blue/30 animate-pulse" />
           <Loader2 className="w-10 h-10 text-neon-purple animate-spin" />
         </div>
-        <p className="mt-6 text-xs font-semibold tracking-[0.2em] text-gradient uppercase animate-pulse">
-          Establishing Cosmic Link...
+        <p className="mt-6 text-xs font-semibold tracking-wider text-gradient uppercase animate-pulse">
+          Authenticating...
         </p>
       </div>
     );

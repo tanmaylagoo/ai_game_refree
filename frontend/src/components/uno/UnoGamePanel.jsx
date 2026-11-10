@@ -82,7 +82,7 @@ const UnoGamePanel = () => {
     <div className="space-y-6 relative">
       {isThinking && (
         <div className="absolute inset-0 bg-cosmic-900/60 backdrop-blur-sm rounded-2xl flex items-center justify-center z-20">
-          <LoadingSpinner size="lg" text="AI Referee is reviewing..." />
+          <LoadingSpinner size="lg" text="FairPlay AI is reviewing..." />
         </div>
       )}
 

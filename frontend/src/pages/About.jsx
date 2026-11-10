@@ -25,10 +25,10 @@ const features = [
 const About = () => {
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
-      <PageHeader title="About" subtitle="Learn about the AI Tabletop Referee" icon={Info} />
+      <PageHeader title="About" subtitle="Learn about FairPlay AI" icon={Info} />
 
       <Card>
-        <h2 className="text-xl font-semibold text-gradient font-[family-name:var(--font-accent)] mb-3">AI Tabletop Referee</h2>
+        <h2 className="text-xl font-semibold text-gradient font-[family-name:var(--font-accent)] mb-3">FairPlay AI</h2>
         <p className="text-cosmic-200 leading-relaxed">
           An intelligent platform that acts as an AI-powered referee for tabletop games. It validates moves,
           explains rules, provides strategic insights, and ensures fair play across Chess, UNO, and Monopoly.

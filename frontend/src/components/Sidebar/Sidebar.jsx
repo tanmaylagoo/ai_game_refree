@@ -42,7 +42,7 @@ const Sidebar = () => {
       <div className="sidebar-header">
         <LogoIcon className="sidebar-logo" size={32} />
         <div className="sidebar-title-container">
-          <span className="sidebar-title">AI Game Referee</span>
+          <span className="sidebar-title">FairPlay AI</span>
           <span className="sidebar-subtitle-tag">V1.0.0</span>
         </div>
       </div>

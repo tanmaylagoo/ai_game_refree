@@ -28,7 +28,7 @@ const ChatWindow = ({ gameId }) => {
       const response = await queryGameChat(gameId, query);
       addMessage(gameId, { role: 'ai', content: response.decision || response.message || response.response || response.engine_validation?.reason || 'Move processed.' });
     } catch (err) {
-      addMessage(gameId, { role: 'ai', content: `⚠️ **Error**: ${err.message || 'Could not reach AI Referee'}` });
+      addMessage(gameId, { role: 'ai', content: `⚠️ **Error**: ${err.message || 'Could not reach FairPlay AI'}` });
     } finally {
       setIsLoading(false);
     }
@@ -47,14 +47,14 @@ const ChatWindow = ({ gameId }) => {
       <div className="relative flex items-center justify-between px-5 py-4 border-b border-white/[0.04]">
         <div className="text-center w-full">
           <h1 className="text-2xl font-bold text-cosmic-50">
-            {gameId === 'uno' ? 'UNO Rules Assistant' : gameId === 'monopoly' ? 'Monopoly Rules Assistant' : 'AI Referee'}
+            {gameId === 'uno' ? 'UNO Rules Assistant' : gameId === 'monopoly' ? 'Monopoly Rules Assistant' : 'FairPlay AI'}
           </h1>
           <p className="mt-1 text-sm text-cosmic-300">
             {gameId === 'uno'
               ? 'Ask any question about official UNO rules and gameplay.'
               : gameId === 'monopoly'
               ? 'Ask anything about Monopoly rules, properties, auctions, mortgages, rent, or gameplay.'
-              : 'Chat with the AI Referee'}
+              : 'Chat with FairPlay AI'}
           </p>
         </div>
         <button
@@ -119,7 +119,7 @@ const ChatWindow = ({ gameId }) => {
           </AnimatePresence>
         )}
         {isLoading && (
-          <LoadingSpinner size="sm" text="AI Referee is reviewing your move..." />
+          <LoadingSpinner size="sm" text="FairPlay AI is reviewing your move..." />
         )}
         <div ref={messagesEndRef} />
       </div>
@@ -132,7 +132,7 @@ const ChatWindow = ({ gameId }) => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask the AI Referee..."
+            placeholder="Ask FairPlay AI..."
             disabled={isLoading}
             className="flex-1 bg-transparent text-base text-cosmic-50 placeholder:text-cosmic-300/50 outline-none py-2.5 disabled:opacity-50"
           />

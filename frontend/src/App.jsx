@@ -1,11 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ChatProvider } from './contexts/ChatContext';
 import { MonopolySessionProvider } from './contexts/MonopolySessionContext';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import PublicRoute from './components/PublicRoute';
 import Sidebar from './components/layout/Sidebar';
 import Navbar from './components/layout/Navbar';
 import Home from './pages/Home';
@@ -16,49 +17,32 @@ import About from './pages/About';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import NotFound from './pages/NotFound';
-import { useLocation } from 'react-router-dom';
 import StarfieldBackground from './components/ui/StarfieldBackground';
 
-const Layout = () => {
+const AuthenticatedLayout = () => {
   const location = useLocation();
   const isGameRoute = ['/chess', '/uno', '/monopoly', '/about'].includes(location.pathname);
   const isHome = location.pathname === '/';
 
   return (
-    <div className="flex h-screen bg-cosmic-900 overflow-hidden" style={{ background: '#050516' }}>
-      {/* Global animated starfield */}
-      <StarfieldBackground />
-      {/* Sidebar — sits above starfield */}
-      {isGameRoute && <div style={{ position: 'relative', zIndex: 10 }}><Sidebar /></div>}
-
-      {/* Main Content */}
-      <div className={`flex-1 flex flex-col min-h-screen ${isGameRoute ? 'ml-[260px]' : ''}`} style={{ position: 'relative', zIndex: 10 }}>
-        {isHome ? null : <Navbar />}
-        <main className="flex-1 overflow-hidden">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/chess" element={<Chess />} />
-            <Route path="/uno" element={<Uno />} />
-            <Route path="/monopoly" element={<Monopoly />} />
-            <Route path="/about" element={<About />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-      </div>
-    </div>
-  );
-};
-
-const AuthenticatedLayout = () => {
-  return (
     <ProtectedRoute>
-      <div className="flex h-screen bg-cosmic-900 overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar />
+      <div className="flex h-screen bg-cosmic-900 overflow-hidden" style={{ background: '#050516' }}>
+        {/* Global animated starfield */}
+        <StarfieldBackground />
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col ml-[260px] min-h-screen">
-          <Navbar />
+        {/* Sidebar — sits above starfield on game and about routes */}
+        {isGameRoute && (
+          <div style={{ position: 'relative', zIndex: 10 }}>
+            <Sidebar />
+          </div>
+        )}
+
+        {/* Main Content Area */}
+        <div
+          className={`flex-1 flex flex-col min-h-screen ${isGameRoute ? 'ml-[260px]' : ''}`}
+          style={{ position: 'relative', zIndex: 10 }}
+        >
+          {isHome ? null : <Navbar />}
           <main className="flex-1 overflow-hidden">
             <Routes>
               <Route path="/" element={<Home />} />
@@ -83,8 +67,25 @@ function App() {
           <MonopolySessionProvider>
             <Router>
               <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+                {/* Guest-only routes: redirect to / if already logged in */}
+                <Route
+                  path="/login"
+                  element={
+                    <PublicRoute>
+                      <Login />
+                    </PublicRoute>
+                  }
+                />
+                <Route
+                  path="/register"
+                  element={
+                    <PublicRoute>
+                      <Register />
+                    </PublicRoute>
+                  }
+                />
+
+                {/* All other routes strictly protected */}
                 <Route path="/*" element={<AuthenticatedLayout />} />
               </Routes>
 

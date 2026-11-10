@@ -28,7 +28,7 @@ const Sidebar = () => {
           <Gamepad2 size={22} className="text-white" />
         </div>
         <div className="flex flex-col">
-          <span className="text-lg font-semibold text-gradient font-[family-name:var(--font-accent)] tracking-tight">AI Referee</span>
+          <span className="text-lg font-semibold text-gradient font-[family-name:var(--font-accent)] tracking-tight">FairPlay AI</span>
           <span className="text-[10px] text-cosmic-300 uppercase tracking-[0.15em] font-medium">v1.0.0</span>
         </div>
       </div>

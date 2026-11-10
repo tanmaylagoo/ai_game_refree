@@ -44,10 +44,10 @@ const Login = () => {
             <Gamepad2 size={30} className="text-white" />
           </div>
           <h1 className="text-3xl font-extrabold text-gradient tracking-tight font-[family-name:var(--font-accent)]">
-            AI Referee
+            FairPlay AI
           </h1>
           <p className="text-sm text-cosmic-200 mt-2 text-center">
-            Sign in to enter the cosmic rule validation chamber
+            Sign in to your account
           </p>
         </div>
 
@@ -115,7 +115,7 @@ const Login = () => {
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
-                  <span>Enter Chamber</span>
+                  <span>Sign In</span>
                   <ArrowRight size={16} />
                 </>
               )}
@@ -124,12 +124,12 @@ const Login = () => {
 
           {/* Card Footer Link */}
           <div className="mt-8 text-center text-xs text-cosmic-200 border-t border-white/[0.03] pt-6">
-            <span>New player? </span>
+            <span>Don't have an account? </span>
             <Link
               to="/register"
               className="text-neon-cyan hover:text-neon-cyan/80 font-medium transition-colors duration-200"
             >
-              Create a cosmic key
+              Sign up
             </Link>
           </div>
         </div>

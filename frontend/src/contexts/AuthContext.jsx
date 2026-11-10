@@ -48,8 +48,16 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (username, email, password) => {
     try {
-      await api.post('/api/auth/register', { username, email, password });
-      toast.success('Registration successful! You can now log in.');
+      const response = await api.post('/api/auth/register', { username, email, password });
+      const { access_token, user: userData } = response.data || {};
+      if (access_token && userData) {
+        localStorage.setItem('token', access_token);
+        setToken(access_token);
+        setUser(userData);
+        toast.success(`Welcome to FairPlay AI, ${userData.username}!`);
+      } else {
+        await login(email, password);
+      }
       return true;
     } catch (error) {
       toast.error(error.message || 'Registration failed. Try again.');
@@ -57,11 +65,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    setToken(null);
-    setUser(null);
-    toast.success('Logged out successfully');
+  const logout = async () => {
+    try {
+      if (token) {
+        await api.post('/api/auth/logout');
+      }
+    } catch (error) {
+      console.warn('[Logout API error]', error);
+    } finally {
+      localStorage.removeItem('token');
+      setToken(null);
+      setUser(null);
+      toast.success('Logged out successfully');
+    }
   };
 
   return (
