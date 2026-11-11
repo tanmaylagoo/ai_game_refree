@@ -9,13 +9,15 @@ from app.database.models import GameSession
 def create_session(
     db: Session,
     game: str,
-    state: dict
+    state: dict,
+    user_id: str
 ):
     session_id = str(uuid.uuid4())
 
     session = GameSession(
         id=session_id,
         game=game,
+        user_id=user_id,
         state_json=json.dumps(state)
     )
 
@@ -27,10 +29,12 @@ def create_session(
 
 def load_session(
     db: Session,
-    session_id: str
+    session_id: str,
+    user_id: str
 ):
     session = db.query(GameSession).filter(
-        GameSession.id == session_id
+        GameSession.id == session_id,
+        GameSession.user_id == user_id
     ).first()
 
     if session is None:
@@ -42,10 +46,12 @@ def load_session(
 def update_session(
     db: Session,
     session_id: str,
-    state: dict
+    state: dict,
+    user_id: str
 ):
     session = db.query(GameSession).filter(
-        GameSession.id == session_id
+        GameSession.id == session_id,
+        GameSession.user_id == user_id
     ).first()
 
     if session is None:
@@ -60,10 +66,12 @@ def update_session(
 
 def delete_session(
     db: Session,
-    session_id: str
+    session_id: str,
+    user_id: str
 ):
     session = db.query(GameSession).filter(
-        GameSession.id == session_id
+        GameSession.id == session_id,
+        GameSession.user_id == user_id
     ).first()
 
     if session is None:

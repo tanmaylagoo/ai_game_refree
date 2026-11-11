@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Dict, Any
+from starlette.concurrency import run_in_threadpool
 
 from app.database.database import get_db
 from app.database.crud import (
@@ -13,6 +14,7 @@ from app.database.crud import (
 
 from app.graph.graph import referee_agent
 from app.routers.auth import get_current_user
+from app.database.mongodb import enforce_user_rate_limit
 
 router = APIRouter(
     prefix="/monopoly",
@@ -20,11 +22,11 @@ router = APIRouter(
 )
 
 class CreateSessionRequest(BaseModel):
-    game_state: Dict[str, Any]
+    game_state: Dict[str, Any] = Field(max_length=100)
 
 class MoveRequest(BaseModel):
-    session_id: str
-    user_query: str
+    session_id: str = Field(min_length=36, max_length=36)
+    user_query: str = Field(min_length=1, max_length=2000)
 
 @router.post("/create")
 def create_monopoly_session(
@@ -36,7 +38,8 @@ def create_monopoly_session(
     session_id = create_session(
         db,
         "monopoly",
-        payload.game_state
+        payload.game_state,
+        current_user["id"]
     )
 
     return {
@@ -52,7 +55,8 @@ def get_monopoly_session(
 
     state = load_session(
         db,
-        session_id
+        session_id,
+        current_user["id"]
     )
 
     if state is None:
@@ -72,7 +76,8 @@ def remove_session(
 
     success = delete_session(
         db,
-        session_id
+        session_id,
+        current_user["id"]
     )
 
     if not success:
@@ -86,15 +91,18 @@ def remove_session(
     }
 
 @router.post("/move")
-def monopoly_move(
+async def monopoly_move(
     payload: MoveRequest,
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
 
+    await enforce_user_rate_limit(current_user["id"], "monopoly-move", limit=10)
+
     state = load_session(
         db,
-        payload.session_id
+        payload.session_id,
+        current_user["id"]
     )
 
     if state is None:
@@ -118,13 +126,14 @@ def monopoly_move(
         "final_decision": ""
     }
 
-    result = referee_agent.invoke(graph_state)
+    result = await run_in_threadpool(referee_agent.invoke, graph_state)
 
 
     update_session(
     db,
     payload.session_id,
-    result["game_state"]
+    result["game_state"],
+    current_user["id"]
 )
 
     return {

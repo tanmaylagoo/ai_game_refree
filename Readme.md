@@ -127,23 +127,38 @@ Open your browser at `http://localhost:5173`.
 
 ---
 
-## Deployment (Render)
+## Production deployment
 
-This repository includes a [`render.yaml`](./render.yaml) file for one-click deployment on Render:
+The backend needs MongoDB Atlas, a Groq API key, and persistent storage for Monopoly sessions and the Chroma rulebook index. The Render Blueprint attaches a 5 GB persistent disk, so its API service uses a paid Render plan. The frontend is static and can be hosted on Render or Vercel. Never put backend secrets in frontend environment variables: `VITE_*` values are included in the public browser bundle.
 
-1. **Backend Web Service**:
-   - **Root Directory**: `backend`
-   - **Build Command**: `pip install -r requirements.txt && python ingest_rulebooks.py`
-   - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-   - **Required Env Vars**: `MONGO_URI`, `GROQ_API_KEY`, `JWT_SECRET`, `CORS_ORIGINS`
-2. **Frontend Static Site**:
-   - **Root Directory**: `frontend`
-   - **Build Command**: `npm install && npm run build`
-   - **Publish Directory**: `dist`
-   - **SPA Rewrite Rule**: `/*` → `/index.html`
-   - **Required Env Var**: `VITE_API_BASE_URL` (Points to backend URL)
+### Prepare the database and keys
 
----
+1. Create a MongoDB Atlas database and a dedicated database user with access only to the FairPlay database. Restrict Atlas network access to the addresses required by your hosting provider. If broad outbound access is required, use a separate least-privilege database user and a strong password.
+2. Create a Groq API key. The deployed application calls Groq for referee answers; `GOOGLE_API_KEY` is not required by the current code.
+3. Generate a unique JWT secret of at least 32 characters. For example: `python -c "import secrets; print(secrets.token_urlsafe(48))"`. Never commit real keys or put them in `frontend/`.
+
+### Deploy the full app on Render
+
+1. Push the repository to GitHub and choose **New + → Blueprint** in Render. Connect the repository and let Render read [`render.yaml`](./render.yaml).
+2. Provide `MONGO_URI`, `GROQ_API_KEY`, and `CORS_ORIGINS` when prompted. Set `CORS_ORIGINS` to the exact frontend origin, such as `https://fairplay-ai-frontend.onrender.com` (no trailing slash). The Blueprint generates `JWT_SECRET` and configures production mode and persistent paths.
+3. Set the frontend's `VITE_API_BASE_URL` to the backend origin, such as `https://fairplay-ai-backend.onrender.com` (no trailing slash), then deploy. If the Blueprint does not accept this value before the service URL exists, deploy once, add it in the frontend service's **Environment** page, and redeploy the static site.
+4. Wait for the backend's first startup to finish. It downloads the embedding model and ingests the tracked PDFs into the attached disk. Check `https://<backend-host>/health` for `{"status":"healthy"}`.
+5. Confirm `CORS_ORIGINS` exactly matches the browser-visible frontend origin. For a custom domain or a Vercel frontend, add that origin to the comma-separated list in the backend service's **Environment** settings and redeploy the backend.
+
+Keep the backend on one instance while it uses the attached disk: local SQLite and Chroma files are not shared across instances. Back up the disk and MongoDB separately. Initial Chroma ingestion can take several minutes; later starts reuse the persistent index.
+
+### Deploy the frontend on Vercel
+
+1. Import the repository in Vercel and set **Root Directory** to `frontend`.
+2. Use the Vite defaults: build command `npm run build`, output directory `dist`, and install command `npm install` (or `npm ci`). The checked-in [`vercel.json`](./frontend/vercel.json) configures SPA routing and basic browser security headers.
+3. In **Project Settings → Environment Variables**, add `VITE_API_BASE_URL` with the full Render backend origin, such as `https://fairplay-ai-backend.onrender.com`. Add it to Production and Preview only if previews should call the live API, then redeploy. This URL is public configuration, not a secret.
+4. Add the deployed Vercel domain (and any custom domain) to the backend's `CORS_ORIGINS`, comma-separated with no trailing slash, then redeploy the Render backend. Keep the Render static frontend or remove it if Vercel is your only frontend host.
+
+### Before public launch
+
+- Verify registration, login, logout, authenticated chat, and that one account cannot read or change another account's Monopoly session.
+- Keep MongoDB credentials and LLM keys in hosting provider secret settings. Rotate any key that was ever committed or shared.
+- Referee queries and Monopoly moves are limited to 10 per account per minute using MongoDB-backed counters. Add monitoring and provider-side spending limits; registration and login also benefit from a dedicated edge rate limit before broad public launch.
 
 ## License
 

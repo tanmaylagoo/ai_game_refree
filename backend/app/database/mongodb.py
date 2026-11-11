@@ -1,5 +1,7 @@
 import os
 import logging
+import hashlib
+from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 
@@ -17,6 +19,7 @@ client = None
 db = None
 users_collection = None
 blacklist_collection = None
+rate_limit_collection = None
 
 if not MONGO_URI:
     logger.error("MONGO_URI not found in environment variables. Database operations will fail.")
@@ -36,6 +39,7 @@ else:
 
         users_collection = db.get_collection("users")
         blacklist_collection = db.get_collection("token_blacklist")
+        rate_limit_collection = db.get_collection("rate_limits")
         logger.info(f"MongoDB initialized. Target database: '{db.name}', Collections: 'users', 'token_blacklist'.")
     except Exception as e:
         logger.error(f"Failed to initialize MongoDB client: {e}")
@@ -64,9 +68,29 @@ async def ensure_mongodb_indexes():
         # TTL index: deletes document once current time >= expires_at
         await b_coll.create_index("expires_at", expireAfterSeconds=0)
         await b_coll.create_index("token", unique=True)
+        await db.get_collection("rate_limits").create_index("expires_at", expireAfterSeconds=0)
         logger.info("MongoDB indexes verified/created (token_blacklist TTL index ready).")
     except Exception as e:
-        logger.warning(f"Could not initialize MongoDB indexes: {e}")
+        logger.error("Could not initialize MongoDB indexes: %s", type(e).__name__)
+        raise RuntimeError("Could not initialize required MongoDB indexes") from e
+
+
+async def enforce_user_rate_limit(user_id: str, action: str, limit: int, window_seconds: int = 60):
+    """Apply an atomic, shared per-user request limit using MongoDB counters."""
+    if rate_limit_collection is None:
+        raise RuntimeError("MongoDB rate limiter is not initialized")
+    now = datetime.utcnow()
+    window = int(now.timestamp()) // window_seconds
+    bucket_id = hashlib.sha256(f"{action}:{user_id}:{window}".encode()).hexdigest()
+    await rate_limit_collection.update_one(
+        {"_id": bucket_id},
+        {"$inc": {"count": 1}, "$setOnInsert": {"expires_at": now + timedelta(seconds=window_seconds * 2)}},
+        upsert=True,
+    )
+    bucket = await rate_limit_collection.find_one({"_id": bucket_id}, {"count": 1})
+    if bucket and bucket["count"] > limit:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=429, detail="Request limit reached; try again shortly")
 
 async def ping_mongodb():
     """Verify that MongoDB cluster is reachable and authenticated."""

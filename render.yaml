@@ -4,14 +4,27 @@ services:
     name: fairplay-ai-backend
     runtime: python
     rootDir: backend
-    plan: free
-    buildCommand: pip install -r requirements.txt && python ingest_rulebooks.py
+    plan: starter
+    buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    disk:
+      name: fairplay-ai-data
+      mountPath: /var/data
+      sizeGB: 5
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
       - key: MONGO_URI
         sync: false
+      - key: APP_ENV
+        value: production
+      - key: SQLITE_PATH
+        value: /var/data/game_sessions.db
+      - key: CHROMA_PERSIST_DIR
+        value: /var/data/chroma_db
+      - key: HF_HOME
+        value: /var/data/hf_cache
       - key: MONGO_DB_NAME
         value: ai_game_referee
       - key: GROQ_API_KEY
@@ -27,7 +40,7 @@ services:
     runtime: static
     rootDir: frontend
     plan: free
-    buildCommand: npm install && npm run build
+    buildCommand: npm ci && npm run build
     staticPublishPath: dist
     routes:
       - type: rewrite

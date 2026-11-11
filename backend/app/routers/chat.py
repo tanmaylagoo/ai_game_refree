@@ -1,9 +1,11 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
-from typing import Dict, Any
+from typing import Dict, Any, Literal
+from starlette.concurrency import run_in_threadpool
 
 from app.graph.graph import referee_agent
 from app.routers.auth import get_current_user
+from app.database.mongodb import enforce_user_rate_limit
 
 router = APIRouter(
     prefix="/chat",
@@ -12,7 +14,7 @@ router = APIRouter(
 
 
 class QueryRequest(BaseModel):
-    game_id: str = Field(
+    game_id: Literal["chess", "uno", "monopoly"] = Field(
         ...,
         json_schema_extra={"example": "chess"},
         description="Game ID (chess, uno, monopoly)"
@@ -21,7 +23,9 @@ class QueryRequest(BaseModel):
     user_query: str = Field(
         ...,
         json_schema_extra={"example": "Nf3"},
-        description="Move or question from the player"
+        description="Move or question from the player",
+        min_length=1,
+        max_length=2000
     )
 
     game_state: Dict[str, Any] = Field(
@@ -42,6 +46,7 @@ async def process_referee_inquiry(
     3. Generate explanation using GROQ
     """
 
+    await enforce_user_rate_limit(current_user["id"], "chat", limit=10)
     try:
         initial_state = {
             "game_id": payload.game_id.lower().strip(),
@@ -53,7 +58,7 @@ async def process_referee_inquiry(
             "final_decision": ""
         }
 
-        output_state = referee_agent.invoke(initial_state)
+        output_state = await run_in_threadpool(referee_agent.invoke, initial_state)
 
         return {
             "decision": output_state["final_decision"],
@@ -61,7 +66,9 @@ async def process_referee_inquiry(
         }
 
     except Exception as e:
+        import logging
+        logging.getLogger("routers.chat").exception("Referee workflow failed")
         raise HTTPException(
             status_code=500,
-            detail=f"Graph execution failed: {str(e)}"
+            detail="Referee service failed to process the request"
         )

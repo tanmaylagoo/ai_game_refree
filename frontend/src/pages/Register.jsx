@@ -27,8 +27,8 @@ const Register = () => {
       return;
     }
 
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+    if (password.length < 12) {
+      toast.error("Password must be at least 12 characters");
       return;
     }
 
@@ -122,6 +122,8 @@ const Register = () => {
                 </span>
                 <input
                   type={showPassword ? 'text' : 'password'}
+                  minLength={12}
+                  maxLength={72}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -149,6 +151,8 @@ const Register = () => {
                 </span>
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
+                  minLength={12}
+                  maxLength={72}
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}

@@ -21,12 +21,11 @@ router = APIRouter(
 
 # JWT Configuration
 SECRET_KEY = os.getenv("JWT_SECRET")
-if not SECRET_KEY:
-    logger.warning("JWT_SECRET is not set in environment! Using development fallback. Please set JWT_SECRET in production.")
-    SECRET_KEY = "fairplay_ai_default_development_secret_key_102938"
+if not SECRET_KEY or len(SECRET_KEY) < 32:
+    raise RuntimeError("JWT_SECRET must be set to a random value of at least 32 characters")
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))  # 24 hours
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
 
 # Security Header Parser
 security = HTTPBearer()
@@ -71,11 +70,11 @@ def verify_token(token: str) -> Optional[dict]:
 class UserRegister(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
     email: EmailStr
-    password: str = Field(..., min_length=6)
+    password: str = Field(..., min_length=12, max_length=72)
 
 class UserLogin(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=1, max_length=72)
 
 class UserResponse(BaseModel):
     id: str
@@ -94,8 +93,8 @@ async def is_token_blacklisted(token: str) -> bool:
         doc = await blacklist.find_one({"token": token})
         return doc is not None
     except Exception as e:
-        logger.warning(f"Failed to check token blacklist: {e}")
-        return False
+        logger.error("Token revocation check unavailable: %s", type(e).__name__)
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Authentication service temporarily unavailable") from e
 
 # Dependency to get current user
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
@@ -123,7 +122,11 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         )
     
     users_coll = get_users_collection()
-    user = await users_coll.find_one({"_id": ObjectId(user_id)})
+    try:
+        object_id = ObjectId(user_id)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication token") from e
+    user = await users_coll.find_one({"_id": object_id})
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -132,26 +135,26 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     return serialize_mongo_user(user)
 
 def handle_database_error(e: Exception):
-    logger.error(f"Database error encountered: {type(e).__name__}: {e}")
+    logger.error("Database error encountered: %s", type(e).__name__)
     if isinstance(e, ServerSelectionTimeoutError):
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Cannot reach MongoDB cluster. Please check that MongoDB Atlas Network Access has your IP whitelisted (or 0.0.0.0/0 allowed)."
+            detail="Database service temporarily unavailable"
         )
     elif isinstance(e, OperationFailure):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"MongoDB authorization or query error: {str(e)}"
+            detail="Database operation failed"
         )
     elif isinstance(e, RuntimeError):
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=str(e)
+            detail="Database service is not configured"
         )
     elif isinstance(e, PyMongoError):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Database error: {str(e)}"
+            detail="Database operation failed"
         )
     raise HTTPException(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -163,18 +166,13 @@ def handle_database_error(e: Exception):
 async def auth_db_status():
     """Diagnostic endpoint to check MongoDB connectivity and active database."""
     try:
-        current_db = get_db()
+        get_db()
         ok, msg = await ping_mongodb()
         return {
-            "status": "connected" if ok else "unreachable",
-            "database": current_db.name,
-            "message": msg
+            "status": "connected" if ok else "unavailable"
         }
-    except Exception as e:
-        return {
-            "status": "error",
-            "error": str(e)
-        }
+    except Exception:
+        return {"status": "unavailable"}
 
 @router.post("/register", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def register(payload: UserRegister):
@@ -274,5 +272,5 @@ async def logout(credentials: HTTPAuthorizationCredentials = Depends(security)):
         )
         return {"status": "success", "message": "Successfully logged out. Token revoked."}
     except Exception as e:
-        logger.error(f"Error blacklisting token on logout: {e}")
-        return {"status": "success", "message": "Logged out (stateless fallback)"}
+        logger.error("Could not revoke token on logout: %s", type(e).__name__)
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Could not revoke session; try again") from e

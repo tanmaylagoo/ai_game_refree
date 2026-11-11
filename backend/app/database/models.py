@@ -11,6 +11,8 @@ class GameSession(Base):
 
     game = Column(String, nullable=False)
 
+    user_id = Column(String, nullable=True, index=True)
+
     state_json = Column(Text, nullable=False)
 
     created_at = Column(DateTime, default=datetime.utcnow)
