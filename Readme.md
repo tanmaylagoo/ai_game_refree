@@ -1,141 +1,113 @@
-# AI Game Referee
+# FairPlay AI
 
-AI Game Referee is a full-stack application that combines deterministic game engines, rulebook retrieval, and generative AI to act as an intelligent referee for tabletop games.
+FairPlay AI is a full-stack application that combines deterministic game engines, rulebook retrieval-augmented generation (RAG), and generative AI to act as an intelligent referee for tabletop games.
 
 The project supports:
 
-- Chess: validates moves using a deterministic chess engine and explains outcomes using rulebook context.
-- UNO: answers rule questions from official rulebooks as a UNO rules assistant.
-- Monopoly: answers Monopoly rule queries and supports game session management.
+- **Chess**: validates moves using a deterministic chess engine and explains outcomes using rulebook context.
+- **UNO**: answers rule questions from official rulebooks as an intelligent rules assistant.
+- **Monopoly**: answers Monopoly rule queries and supports game session management.
+
+---
 
 ## Features
 
-- FastAPI backend with AI-assisted rule retrieval and deterministic validation
-- React + Vite frontend with authentication and game-specific interfaces
-- MongoDB authentication for user sign-up / login
-- SQLite session persistence for Monopoly gameplay
-- ChromaDB vector store for rulebook retrieval
-- LangGraph workflow orchestrator with GROQ-based explanation generation
+- **Deterministic Game Engines**: Strict rule validation powered by `python-chess`.
+- **RAG Rule Retrieval**: ChromaDB vector store loaded with official rulebooks for instant context.
+- **LangGraph & GROQ Orchestration**: Context-aware explanations synthesized with high-speed LLMs.
+- **Full Authentication & Route Protection**:
+  - Secure registration with **automatic login**.
+  - JWT session management with **server-side token revocation** on logout (MongoDB TTL auto-expiring blacklist).
+  - Protected route guards preventing unauthorized access to game chambers and APIs.
+- **Modern React + Vite Frontend**: Cosmic theme, Tailwind CSS, animated starfield, and responsive layout.
+- **One-Click Render Deployment**: Ready-to-deploy configuration using [`render.yaml`](./render.yaml).
+
+---
 
 ## Tech Stack
 
-- Backend: Python, FastAPI, LangChain, LangGraph, ChromaDB, Motor, SQLAlchemy
-- Frontend: React, Vite, Tailwind CSS, React Router, Axios
-- AI / Retrieval: GROQ (`langchain_groq`), Chroma vector store, HuggingFace embeddings
-- Games: Chess engine, UNO rule engine, Monopoly session API
+- **Backend**: Python 3.11+, FastAPI, LangChain, LangGraph, ChromaDB, Motor (MongoDB), SQLAlchemy
+- **Frontend**: React 19, Vite, Tailwind CSS, Framer Motion, React Router, Axios
+- **AI / Retrieval**: GROQ (`langchain_groq`), ChromaDB, HuggingFace embeddings (`all-MiniLM-L6-v2`)
+- **Database**: MongoDB Atlas (Users & Token Blacklist), SQLite (Monopoly Game Sessions)
+
+---
 
 ## Repository Structure
 
-- `backend/` — Python API server and game rule retrieval
-- `frontend/` — React interface and game clients
-- `backend/app/rulebooks/` — source rulebooks for Chess, UNO, Monopoly
-- `chroma_db/` — persisted Chroma vector store data
+- `backend/` — FastAPI application, LangGraph agents, and game engines
+- `frontend/` — React client, game panels, and auth flows
+- `backend/app/rulebooks/` — Source PDFs for Chess, UNO, and Monopoly
+- `backend/chroma_db/` — Persisted Chroma vector store
+- `render.yaml` — Blueprint for automated Render deployment
 
-## Requirements
+---
 
-### Backend
+## Local Setup
 
-- Python 3.11+ recommended
-- `pip` to install dependencies
-- MongoDB instance for auth
-- (Optional) `.env` file for environment variables
+### 1. Backend
 
-### Frontend
-
-- Node.js 20+ recommended
-- `npm` or `pnpm` for installing frontend dependencies
-
-## Setup
-
-### Backend
-
-1. Navigate to the backend folder:
-
-   ```bash
-   cd backend
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Create a `.env` file in `backend/` with the following values:
-
-   ```env
-   MONGO_URI=mongodb+srv://<username>:<password>@<cluster>/<database>?retryWrites=true&w=majority
-   JWT_SECRET=your_jwt_secret_here
-   ```
-
-4. (Optional) If you want the frontend to point to a custom API host, set `VITE_API_BASE_URL` in `frontend/.env`.
-
-### Rulebook ingestion
-
-To load the rulebooks into the local Chroma vector store:
+Navigate to `backend/` and set up the virtual environment:
 
 ```bash
 cd backend
+python -m venv venv
+# Windows:
+.\venv\Scripts\Activate.ps1
+# macOS/Linux:
+source venv/bin/activate
+
+pip install -r requirements.txt
+```
+
+Create a `.env` file in `backend/` (refer to `.env.example`):
+
+```env
+GROQ_API_KEY=your_groq_api_key_here
+GOOGLE_API_KEY=your_google_api_key_here
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/
+MONGO_DB_NAME=ai_game_referee
+JWT_SECRET=your_super_secret_jwt_key_here
+CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+```
+
+Ingest rulebooks into ChromaDB (if not already built):
+
+```bash
 python ingest_rulebooks.py
 ```
 
-This will ingest the PDFs in `backend/app/rulebooks/` into `chroma_db/`.
-
-### Frontend
-
-1. Navigate to the frontend folder:
-
-   ```bash
-   cd frontend
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
-3. Start the development frontend:
-   ```bash
-   npm run dev
-   ```
-
-## Running the application
-
-### Start the backend
-
-From `backend/`:
+Start the FastAPI development server:
 
 ```bash
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### Start the frontend
+### 2. Frontend
 
-From `frontend/`:
+Navigate to `frontend/`:
 
 ```bash
+cd frontend
+npm install
 npm run dev
 ```
 
-Then open the browser at the Vite dev URL (usually `http://localhost:5173`).
+Open your browser at `http://localhost:5173`.
+
+---
 
 ## API Endpoints
 
-### Authentication
+### Authentication (`/api/auth`)
+- `POST /api/auth/register` — Create a new user and automatically receive a JWT session token
+- `POST /api/auth/login` — Authenticate and receive a JWT session token
+- `POST /api/auth/logout` — Revoke the current token and add it to the server blacklist
+- `GET /api/auth/me` — Retrieve the current authenticated user's profile *(Protected)*
+- `GET /api/auth/status` — Diagnostic endpoint verifying database connectivity
 
-- `POST /api/auth/register` — create a new user
-- `POST /api/auth/login` — authenticate and receive a JWT token
-- `GET /api/auth/me` — get the current authenticated user
-
-### Chat / AI referee
-
-- `POST /api/chat/query`
-  - `game_id`: `chess`, `uno`, or `monopoly`
-  - `user_query`: move notation or rule question
-  - `game_state`: current game state payload
-
-Example payload:
+### AI Referee (`/api/chat`) *(Protected)*
+- `POST /api/chat/query` — Submit a player query, move notation, or game state for validation and explanation
 
 ```json
 {
@@ -147,20 +119,32 @@ Example payload:
 }
 ```
 
-### Monopoly session APIs
+### Monopoly Sessions (`/api/monopoly`) *(Protected)*
+- `POST /api/monopoly/create` — Initialize a new Monopoly session
+- `POST /api/monopoly/move` — Validate a move, buy properties, and update game state
+- `GET /api/monopoly/{session_id}` — Fetch saved game state
+- `DELETE /api/monopoly/{session_id}` — Clear a session
 
-- `POST /api/monopoly/create` — create a new Monopoly session
-- `POST /api/monopoly/move` — submit a Monopoly move and update session state
-- `GET /api/monopoly/{session_id}` — load a saved Monopoly session
-- `DELETE /api/monopoly/{session_id}` — delete a session
+---
 
-## Notes
+## Deployment (Render)
 
-- Chess uses deterministic move validation via the Python `chess` library.
-- UNO and Monopoly currently rely on rulebook retrieval and AI responses rather than deterministic move validation.
-- The backend includes a lightweight SQLite session store for Monopoly and MongoDB for user authentication.
-- Update `frontend/src/services/api.js` or set `VITE_API_BASE_URL` if the backend runs on a different host/port.
+This repository includes a [`render.yaml`](./render.yaml) file for one-click deployment on Render:
+
+1. **Backend Web Service**:
+   - **Root Directory**: `backend`
+   - **Build Command**: `pip install -r requirements.txt && python ingest_rulebooks.py`
+   - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+   - **Required Env Vars**: `MONGO_URI`, `GROQ_API_KEY`, `JWT_SECRET`, `CORS_ORIGINS`
+2. **Frontend Static Site**:
+   - **Root Directory**: `frontend`
+   - **Build Command**: `npm install && npm run build`
+   - **Publish Directory**: `dist`
+   - **SPA Rewrite Rule**: `/*` → `/index.html`
+   - **Required Env Var**: `VITE_API_BASE_URL` (Points to backend URL)
+
+---
 
 ## License
 
-This repository does not include a license file. Add one if you want to open-source the project.
+MIT License. See [LICENSE](./LICENSE) if applicable.

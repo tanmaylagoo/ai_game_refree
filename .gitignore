@@ -15,7 +15,9 @@ ENV/
 *.db
 *.sqlite3
 game_sessions.db
+chromadb/
 chroma_db/
+backend/chroma_db/
 
 # Node
 node_modules/

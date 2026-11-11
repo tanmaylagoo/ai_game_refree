@@ -15,6 +15,7 @@ chromadb
 sentence-transformers
 huggingface-hub
 tiktoken
+pypdf
 
 python-multipart
 python-dotenv
